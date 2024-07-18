@@ -1,0 +1,22 @@
+name: 'Dependency Check Action'
+description: 'Run OWASP Dependency Check on your project'
+author: 'Your Name'
+
+inputs:
+  project:
+    description: 'The name of the project being scanned'
+    required: true
+    
+runs:
+  using: 'composite'
+  steps:
+
+    - name: Run Dependency Check (ubuntu)
+      shell: bash
+      run: |
+           docker run -it --rm \
+           -v $(pwd):/src \
+           -v $(pwd)/odc-reports:/report \
+           gagama/owasp-dependency-check-ubuntu:latest \
+           sh -c "/usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data --format JSON --out /report ; /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json"
+           
