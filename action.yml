@@ -14,7 +14,7 @@ runs:
     - name: Run Dependency Check (ubuntu)
       shell: bash
       run: |
-           docker run -it --rm \
+           docker run --rm \
            -v $(pwd):/src \
            -v $(pwd)/odc-reports:/report \
            gagama/owasp-dependency-check-ubuntu:latest \
