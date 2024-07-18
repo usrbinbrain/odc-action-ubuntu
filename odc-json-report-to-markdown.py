@@ -29,7 +29,7 @@ def get_severity_emoji(severity):
         return '🔵'
     else:
         return '⚠️'
-      
+
 def add_reference_link_cve(cve):
     if cve.startswith('CVE-'):
         return f"[{cve}](https://nvd.nist.gov/vuln/detail/{cve})"
@@ -41,27 +41,27 @@ def add_reference_link_cve(cve):
         return f"[{cve}](https://security.netapp.com/advisory/{cve})"
     else:
         return cve
-      
+
 def json_to_markdown(json_file, markdown_file):
     with open(json_file, 'r') as f:
         data = json.load(f)
-      
+
     with open(markdown_file, 'w') as f:
         f.write(f"# Dependency-Check Report\n\n")
         f.write(f"## Project: {data.get('projectInfo', {}).get('name', 'Unknown')}\n")
         f.write(f"Generated on: {data.get('projectInfo', {}).get('reportDate', 'Unknown')}\n\n")
-        
+
         dependencies = data.get('dependencies', [])
         vulnerable_dependencies = [d for d in dependencies if d.get('vulnerabilities', [])]
 
         if not vulnerable_dependencies:
             f.write("No vulnerabilities found.\n")
             return
-        
+
         for dependency in vulnerable_dependencies:
             f.write(f"### Dependency: {dependency.get('fileName', 'Unknown')}\n\n")
             f.write(f"**File Path:** {dependency.get('filePath', 'Unknown')}\n\n")
-            
+
             vulnerabilities = dependency.get('vulnerabilities', [])
             f.write("| CVE | Severity | Description |\n")
             f.write("| --- | -------- | ----------- |\n")
@@ -80,10 +80,9 @@ if __name__ == "__main__":
     json_file = sys.argv[1] if len(sys.argv) > 1 else "./dependency-check-report.json"
     save_dir = get_report_directory(json_file)
     markdown_file = f"{save_dir}dependency-check-report.md"
-    
+
     if os.path.exists(json_file):
         json_to_markdown(json_file, markdown_file)
         print(f"Markdown report generated: {markdown_file}")
     else:
         print(f"JSON report file not found: {json_file}")
-        
