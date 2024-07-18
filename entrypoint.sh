@@ -7,8 +7,8 @@ DC_SCRIPT="/usr/share/dependency-check/bin/dependency-check.sh"
 # Função para verificar a instalação do Dependency-Check
 check_installation() {
         echo "Verificando a instalação do OWASP Dependency-Check..."
-        \$DC_SCRIPT --version
-        if [ \$? -ne 0 ]; then
+        $DC_SCRIPT --version
+        if [ $? -ne 0 ]; then
                 echo "Erro: OWASP Dependency-Check não está instalado corretamente."
                 exit 1
         fi
