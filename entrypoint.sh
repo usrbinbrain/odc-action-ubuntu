@@ -18,3 +18,5 @@ check_installation() {
 check_installation
 # Realizar a varredura no código fonte
 #$DC_SCRIPT --scan ${SCAN_DIRECTORY} --data ${DATA_DIRECTORY} -n --format JSON --out ./
+exec "$@"
+
