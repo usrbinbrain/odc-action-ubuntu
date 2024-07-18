@@ -20,3 +20,8 @@ runs:
            gagama/owasp-dependency-check-ubuntu:latest \
            sh -c "/usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data --format JSON --out /report ; /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json"
            
+    - name: Get SCA Report
+      shell: bash
+      run: |
+           echo "SCA Vuln xD" >> $GITHUB_STEP_SUMMARY
+           cat odc-reports/dependency-check-report.md >> $GITHUB_STEP_SUMMARY
