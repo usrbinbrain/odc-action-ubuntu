@@ -4,6 +4,14 @@ import os
 import re
 import sys
 
+def get_report_directory(path):
+    # Obter o diretório do caminho fornecido
+    directory = os.path.dirname(path)
+    # Adicionar barra final se não estiver presente
+    if not directory.endswith('/'):
+        directory += '/'
+    return directory
+
 def format_versions(text):
     text = text.replace('\n', ' ')
     pattern = r'(\b\d+\.\d+\.\d+\b)'
@@ -69,8 +77,9 @@ def json_to_markdown(json_file, markdown_file):
 
 if __name__ == "__main__":
     # se nao for passado um arquivo json como argumento, o script vai procurar por um arquivo chamado dependency-check-report.json
-    json_file = sys.argv[1] if len(sys.argv) > 1 else "dependency-check-report.json"
-    markdown_file = "dependency-check-report.md"
+    json_file = sys.argv[1] if len(sys.argv) > 1 else "./dependency-check-report.json"
+    save_dir = get_report_directory(json_file)
+    markdown_file = f"{save_dir}dependency-check-report.md"
     
     if os.path.exists(json_file):
         json_to_markdown(json_file, markdown_file)
