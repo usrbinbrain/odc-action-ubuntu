@@ -1,89 +1,54 @@
-#!/usr/bin/env python3
-import json
-import os
-import re
-import sys
+#!/usr/bin/env bash
 
-def get_report_directory(path):
-    # Obter o diretório do caminho fornecido
-    directory = os.path.dirname(path)
-    # Adicionar barra final se não estiver presente
-    if not directory.endswith('/'):
-        directory += '/'
-    return directory
+DOCKERHUB_USERNAME="gagama"
+DOCKERHUB_PASSWORD="dckr_pat_Z7qu9tNnz13GwN7mEHlyx678LWs"
+DOCKERHUB_REPO="gagama/owasp-dependency-check-ubuntu"
+NVD_API_KEY="996fb0ac-b8ff-44f1-9193-11bf30ef5a50"
+DC_SCRIPT="$PWD/dependency-check/bin/dependency-check.sh"
+VALIDATE_INSTALL_CMD="$DC_SCRIPT --version"
+ZIP_FILE="dependency-check.zip"
+DB_DIR="$PWD/OWASP-Dependency-Check/data/local_db"
 
-def format_versions(text):
-    text = text.replace('\n', ' ')
-    pattern = r'(\b\d+\.\d+\.\d+\b)'
-    formatted_text = re.sub(pattern, r'`\1`', text)
-    return formatted_text
+install_packages() {
+        sudo apt-get update && sudo apt-get install -y \
+                curl \
+                unzip \
+                tar \
+                docker \
+                docker.io \
+                default-jre
+}
 
-def get_severity_emoji(severity):
-    if severity.lower() == 'critical':
-        return '🔴'
-    elif severity.lower() == 'high':
-        return '🟣'
-    elif severity.lower() == 'medium':
-        return '🟡'
-    elif severity.lower() == 'low':
-        return '🔵'
-    else:
-        return '⚠️'
+install_owasp_dependency_check() {
+        curl -Ls "https://github.com/jeremylong/DependencyCheck/releases/download/v${VERSION}/dependency-check-${VERSION}-release.zip" --output ${ZIP_FILE}
+        unzip ${ZIP_FILE} &&
+        bash ${VALIDATE_INSTALL_CMD}
+}
 
-def add_reference_link_cve(cve):
-    if cve.startswith('CVE-'):
-        return f"[{cve}](https://nvd.nist.gov/vuln/detail/{cve})"
-    elif cve.startswith('GHSA-'):
-        return f"[{cve}](https://github.com/advisories/{cve})"
-    elif cve.startswith('SNYK-'):
-        return f"[{cve}](https://snyk.io/vuln/{cve})"
-    elif cve.startswith('ntap-'):
-        return f"[{cve}](https://security.netapp.com/advisory/{cve})"
-    else:
-        return cve
+update_owasp_dependency_check() {
+        mkdir -p ${DB_DIR}
+        ${DC_SCRIPT} --data ${DB_DIR} --updateonly --nvdApiKey ${NVD_API_KEY}
+}
 
-def json_to_markdown(json_file, markdown_file):
-    with open(json_file, 'r') as f:
-        data = json.load(f)
+build_and_push_docker_image() {
+        # Construir a imagem Docker
+        docker build -t ${DOCKERHUB_REPO}:latest .
+        # Login no DockerHub
+        echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin
+        # Push da imagem Docker
+        docker push ${DOCKERHUB_REPO}:latest
+}
 
-    with open(markdown_file, 'w') as f:
-        f.write(f"# Dependency-Check Report\n\n")
-        f.write(f"## Project: {data.get('projectInfo', {}).get('name', 'Unknown')}\n")
-        f.write(f"Generated on: {data.get('projectInfo', {}).get('reportDate', 'Unknown')}\n\n")
+install_packages
 
-        dependencies = data.get('dependencies', [])
-        vulnerable_dependencies = [d for d in dependencies if d.get('vulnerabilities', [])]
+VERSION=$(curl -s https://jeremylong.github.io/DependencyCheck/current.txt)
+BYPASS_INSTALL_MSG="Dependency-check ${VERSION} installed, bypass install"
+INSTALL_MSG="Installing dependency-check Version ${VERSION}"
 
-        if not vulnerable_dependencies:
-            f.write("No vulnerabilities found.\n")
-            return
-
-        for dependency in vulnerable_dependencies:
-            f.write(f"### Dependency: {dependency.get('fileName', 'Unknown')}\n\n")
-            f.write(f"**File Path:** {dependency.get('filePath', 'Unknown')}\n\n")
-
-            vulnerabilities = dependency.get('vulnerabilities', [])
-            f.write("| CVE | Severity | Description |\n")
-            f.write("| --- | -------- | ----------- |\n")
-            for vulnerability in vulnerabilities:
-                cve = vulnerability.get('name', 'Unknown')
-                cve = add_reference_link_cve(cve)
-                severity = vulnerability.get('severity', 'Unknown')
-                description = vulnerability.get('description', 'No description provided')
-                description = format_versions(description)
-                emoji = get_severity_emoji(severity)
-                f.write(f"| {cve} | {severity} {emoji} | {description} |\n")
-            f.write("\n")
-
-if __name__ == "__main__":
-    # se nao for passado um arquivo json como argumento, o script vai procurar por um arquivo chamado dependency-check-report.json
-    json_file = sys.argv[1] if len(sys.argv) > 1 else "./dependency-check-report.json"
-    save_dir = get_report_directory(json_file)
-    markdown_file = f"{save_dir}dependency-check-report.md"
-
-    if os.path.exists(json_file):
-        json_to_markdown(json_file, markdown_file)
-        print(f"Markdown report generated: {markdown_file}")
-    else:
-        print(f"JSON report file not found: {json_file}")
-        
+v=$(bash ${VALIDATE_INSTALL_CMD} 2>&1) \
+        && [[ ${v##* } == ${VERSION} ]] \
+        && echo ${BYPASS_INSTALL_MSG} \
+        || echo ${INSTALL_MSG} >&2 \
+        && install_owasp_dependency_check \
+        && update_owasp_dependency_check \
+        && build_and_push_docker_image
