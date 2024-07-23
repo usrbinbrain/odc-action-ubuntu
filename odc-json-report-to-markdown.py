@@ -14,6 +14,7 @@ def get_report_directory(path):
 
 def format_versions(text):
     text = text.replace('\n', ' ')
+    text = text.replace('\r', ' ')
     pattern = r'(\b\d+\.\d+\.\d+\b)'
     formatted_text = re.sub(pattern, r'`\1`', text)
     return formatted_text
