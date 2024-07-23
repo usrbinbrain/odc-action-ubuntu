@@ -4,6 +4,18 @@ import os
 import re
 import sys
 
+def get_first_words(text, limit=250):
+    words = text.split()
+    current_length = 0
+    result = []
+    for word in words:
+        # +1 accounts for the space after each word
+        if current_length + len(word) + 1 > limit:
+            break
+        result.append(word)
+        current_length += len(word) + 1
+    return f"{' '.join(result)}..."
+
 def get_report_directory(path):
     # Obter o diretório do caminho fornecido
     directory = os.path.dirname(path)
@@ -74,6 +86,7 @@ def json_to_markdown(json_file, markdown_file):
                     severity = vulnerability.get('severity', 'Unknown')
                     description = vulnerability.get('description', 'No description provided')
                     description = format_versions(description)
+                    description = get_first_words(description, 100) # controle de quantidade de caracteres na descricao
                     emoji = get_severity_emoji(severity)
                     f.write(f"| {emoji}{severity.capitalize()} | {cve} | {description} |\n")
             f.write("\n")
