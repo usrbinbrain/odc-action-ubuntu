@@ -40,7 +40,7 @@ def add_reference_link_cve(cve):
     elif cve.startswith('ntap-'):
         return f"[{cve}](https://security.netapp.com/advisory/{cve})"
     else:
-        return cve
+        return None
 
 def json_to_markdown(json_file, markdown_file):
     with open(json_file, 'r') as f:
@@ -63,16 +63,19 @@ def json_to_markdown(json_file, markdown_file):
             f.write(f"**File Path:** {dependency.get('filePath', 'Unknown')}\n\n")
 
             vulnerabilities = dependency.get('vulnerabilities', [])
-            f.write("| CVE | Severity | Description |\n")
+            f.write("| Severity | CVE | Description |\n")
             f.write("| --- | -------- | ----------- |\n")
             for vulnerability in vulnerabilities:
                 cve = vulnerability.get('name', 'Unknown')
                 cve = add_reference_link_cve(cve)
+                # se o cve for None, não escrever a linha
+                if cve == None:
+                    pass
                 severity = vulnerability.get('severity', 'Unknown')
                 description = vulnerability.get('description', 'No description provided')
                 description = format_versions(description)
                 emoji = get_severity_emoji(severity)
-                f.write(f"| {cve} | {severity} {emoji} | {description} |\n")
+                f.write(f"| {emoji}{severity.capitalize()} | {cve} | {description} |\n")
             f.write("\n")
 
 if __name__ == "__main__":
@@ -86,3 +89,4 @@ if __name__ == "__main__":
         print(f"Markdown report generated: {markdown_file}")
     else:
         print(f"JSON report file not found: {json_file}")
+        
