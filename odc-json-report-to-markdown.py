@@ -69,13 +69,12 @@ def json_to_markdown(json_file, markdown_file):
                 cve = vulnerability.get('name', 'Unknown')
                 cve = add_reference_link_cve(cve)
                 # se o cve for None, não escrever a linha
-                if cve == None:
-                    pass
-                severity = vulnerability.get('severity', 'Unknown')
-                description = vulnerability.get('description', 'No description provided')
-                description = format_versions(description)
-                emoji = get_severity_emoji(severity)
-                f.write(f"| {emoji}{severity.capitalize()} | {cve} | {description} |\n")
+                if cve != None:
+                    severity = vulnerability.get('severity', 'Unknown')
+                    description = vulnerability.get('description', 'No description provided')
+                    description = format_versions(description)
+                    emoji = get_severity_emoji(severity)
+                    f.write(f"| {emoji}{severity.capitalize()} | {cve} | {description} |\n")
             f.write("\n")
 
 if __name__ == "__main__":
