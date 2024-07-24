@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-DOCKERHUB_USERNAME="gagama"
-DOCKERHUB_PASSWORD="dckr_pat_Z7qu9tNnz13GwN7mEHlyx678LWs"
-DOCKERHUB_REPO="gagama/owasp-dependency-check-ubuntu"
 NVD_API_KEY="996fb0ac-b8ff-44f1-9193-11bf30ef5a50"
 DC_SCRIPT="$PWD/dependency-check/bin/dependency-check.sh"
 VALIDATE_INSTALL_CMD="$DC_SCRIPT --version"
@@ -30,13 +27,12 @@ update_owasp_dependency_check() {
         ${DC_SCRIPT} --data ${DB_DIR} --updateonly --nvdApiKey ${NVD_API_KEY}
 }
 
-build_and_push_docker_image() {
-        # Construir a imagem Docker
-        docker build -t ${DOCKERHUB_REPO}:latest .
-        # Login no DockerHub
-        echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin
+build_and_push_docker_image_aws() {
+        aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/e8b3z6m5
+        docker build -t appsec/odc-action-ubuntu .
+        docker tag appsec/odc-action-ubuntu:latest public.ecr.aws/e8b3z6m5/appsec/odc-action-ubuntu:latest
         # Push da imagem Docker
-        docker push ${DOCKERHUB_REPO}:latest
+        docker push public.ecr.aws/e8b3z6m5/appsec/odc-action-ubuntu:latest
 }
 
 install_packages
@@ -51,5 +47,4 @@ v=$(bash ${VALIDATE_INSTALL_CMD} 2>&1) \
         || echo ${INSTALL_MSG} >&2 \
         && install_owasp_dependency_check \
         && update_owasp_dependency_check \
-        && build_and_push_docker_image \
-	&& rm -rf ./dependency-check*
+        && build_and_push_docker_image_aws

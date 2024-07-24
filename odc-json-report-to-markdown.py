@@ -4,6 +4,18 @@ import os
 import re
 import sys
 
+def get_first_words(text, limit=250):
+    words = text.split()
+    current_length = 0
+    result = []
+    for word in words:
+        # +1 accounts for the space after each word
+        if current_length + len(word) + 1 > limit:
+            break
+        result.append(word)
+        current_length += len(word) + 1
+    return f"{' '.join(result)}..."
+
 def get_report_directory(path):
     # Obter o diretório do caminho fornecido
     directory = os.path.dirname(path)
@@ -14,6 +26,7 @@ def get_report_directory(path):
 
 def format_versions(text):
     text = text.replace('\n', ' ')
+    text = text.replace('\r', ' ')
     pattern = r'(\b\d+\.\d+\.\d+\b)'
     formatted_text = re.sub(pattern, r'`\1`', text)
     return formatted_text
@@ -40,7 +53,7 @@ def add_reference_link_cve(cve):
     elif cve.startswith('ntap-'):
         return f"[{cve}](https://security.netapp.com/advisory/{cve})"
     else:
-        return cve
+        return None
 
 def json_to_markdown(json_file, markdown_file):
     with open(json_file, 'r') as f:
@@ -63,16 +76,19 @@ def json_to_markdown(json_file, markdown_file):
             f.write(f"**File Path:** {dependency.get('filePath', 'Unknown')}\n\n")
 
             vulnerabilities = dependency.get('vulnerabilities', [])
-            f.write("| CVE | Severity | Description |\n")
+            f.write("| Severity | CVE | Description |\n")
             f.write("| --- | -------- | ----------- |\n")
             for vulnerability in vulnerabilities:
                 cve = vulnerability.get('name', 'Unknown')
                 cve = add_reference_link_cve(cve)
-                severity = vulnerability.get('severity', 'Unknown')
-                description = vulnerability.get('description', 'No description provided')
-                description = format_versions(description)
-                emoji = get_severity_emoji(severity)
-                f.write(f"| {cve} | {severity} {emoji} | {description} |\n")
+                # se o cve for None, não escrever a linha
+                if cve != None:
+                    severity = vulnerability.get('severity', 'Unknown')
+                    description = vulnerability.get('description', 'No description provided')
+                    description = format_versions(description)
+                    #description = get_first_words(description, 100) # controle de quantidade de caracteres na descricao
+                    emoji = get_severity_emoji(severity)
+                    f.write(f"| {emoji} {severity.capitalize()} | {cve} | {description} |\n")
             f.write("\n")
 
 if __name__ == "__main__":
@@ -86,3 +102,4 @@ if __name__ == "__main__":
         print(f"Markdown report generated: {markdown_file}")
     else:
         print(f"JSON report file not found: {json_file}")
+        
