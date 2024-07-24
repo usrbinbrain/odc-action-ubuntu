@@ -88,7 +88,7 @@ def json_to_markdown(json_file, markdown_file):
                     description = format_versions(description)
                     #description = get_first_words(description, 100) # controle de quantidade de caracteres na descricao
                     emoji = get_severity_emoji(severity)
-                    f.write(f"| {emoji}{severity.capitalize()} | {cve} | {description} |\n")
+                    f.write(f"| {emoji} {severity.capitalize()} | {cve} | {description} |\n")
             f.write("\n")
 
 if __name__ == "__main__":

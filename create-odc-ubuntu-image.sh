@@ -51,4 +51,5 @@ v=$(bash ${VALIDATE_INSTALL_CMD} 2>&1) \
         || echo ${INSTALL_MSG} >&2 \
         && install_owasp_dependency_check \
         && update_owasp_dependency_check \
-        && build_and_push_docker_image
+        && build_and_push_docker_image \
+	&& rm -rf ./dependency-check*
