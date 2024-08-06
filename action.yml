@@ -25,3 +25,9 @@ runs:
       run: |
            echo "SCA Vuln xD" >> $GITHUB_STEP_SUMMARY
            cat odc-reports/dependency-check-report.md >> $GITHUB_STEP_SUMMARY
+
+    - name: Upload Dependency Check Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: dependency-check-report
+        path: odc-reports/dependency-check-report.json
