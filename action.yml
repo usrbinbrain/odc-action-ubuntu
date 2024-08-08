@@ -15,19 +15,14 @@ runs:
       shell: bash
       run: |
            curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o suppression.xml -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/suppression.xml?ref=feat-action'
+           curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o libscan.py -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/libscan.py?ref=feat-action'
+           curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o github_target_libs.json -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/github_target_libs.json?ref=feat-action'
            docker run --rm \
            -v $(pwd):/src \
            -v $(pwd)/odc-reports:/report \
            gagama/owasp-dependency-check-ubuntu:latest \
-           sh -c "/usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data --enableExperimental --suppression suppression.xml --format JSON --out /report ; /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json"
-           
-    - name: Run LibScan
-      shell: bash
-      run: |
-           curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o libscan.py -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/libscan.py?ref=feat-action'
-           curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o github_target_libs.json -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/github_target_libs.json?ref=feat-action'
-           python3 libscan.py odc-reports/dependency-check-report.json github_target_libs.json
-
+           sh -c "/usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data --enableExperimental --suppression suppression.xml --format JSON --out /report ; /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json ; /src/libscan.py /report/dependency-check-report.json /src/github_target_libs.json"
+  
     - name: Get SCA and LibScan Report
       shell: bash
       run: |
