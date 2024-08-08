@@ -20,11 +20,18 @@ runs:
            gagama/owasp-dependency-check-ubuntu:latest \
            sh -c "/usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data --enableExperimental --suppression suppression.xml --format JSON --out /report ; /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json"
            
-    - name: Get SCA Report
+    - name: Run LibScan
+      shell: bash
+      run: |
+           python3 libscan.py odc-reports/dependency-check-report.json github_target_libs.json
+
+    - name: Get SCA and LibScan Report
       shell: bash
       run: |
            echo "SCA Vuln xD" >> $GITHUB_STEP_SUMMARY
            cat odc-reports/dependency-check-report.md >> $GITHUB_STEP_SUMMARY
+           echo "LibScan xD" >> $GITHUB_STEP_SUMMARY
+           cat odc-reports/libscan-report.md >> $GITHUB_STEP_SUMMARY
 
     - name: Upload Dependency Check Report
       uses: actions/upload-artifact@v4
