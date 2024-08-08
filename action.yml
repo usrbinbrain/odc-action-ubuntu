@@ -21,7 +21,7 @@ runs:
            -v $(pwd):/src \
            -v $(pwd)/odc-reports:/report \
            gagama/owasp-dependency-check-ubuntu:latest \
-           sh -c "/usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data --enableExperimental --suppression suppression.xml --format JSON --out /report ; /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json ; python3 /src/libscan.py /report/dependency-check-report.json /src/github_target_libs.json"
+           sh -c "/usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data --enableExperimental --suppression /src/suppression.xml --format JSON --out /report ; python3 /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json ; python3 /src/libscan.py /report/dependency-check-report.json /src/github_target_libs.json"
   
     - name: Get SCA and LibScan Report
       shell: bash
