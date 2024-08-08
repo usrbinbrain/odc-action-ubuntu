@@ -26,9 +26,9 @@ runs:
     - name: Get SCA and LibScan Report
       shell: bash
       run: |
-           echo "SCA Vuln xD" >> $GITHUB_STEP_SUMMARY
+           echo "SCA Vuln 🛡️" >> $GITHUB_STEP_SUMMARY
            cat odc-reports/dependency-check-report.md >> $GITHUB_STEP_SUMMARY
-           echo "LibScan xD" >> $GITHUB_STEP_SUMMARY
+           echo "LibScan 🛡️" >> $GITHUB_STEP_SUMMARY
            cat odc-reports/libscan-report.md >> $GITHUB_STEP_SUMMARY
 
     - name: Upload Dependency Check Report
