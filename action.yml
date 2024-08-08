@@ -36,6 +36,3 @@ runs:
       with:
         name: dependency-check-report
         path: odc-reports/dependency-check-report.json
-    # tests #################################################################################
-    - name: Print Full event
-      run: echo '${{ toJson(github.event) }}' | jq .
