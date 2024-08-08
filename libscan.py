@@ -1,4 +1,3 @@
-\
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import json
@@ -10,8 +9,8 @@ def get_report_directory(path):
     # Obter o diretório do caminho fornecido
     directory = os.path.dirname(path)
     # Adicionar barra final se não estiver presente
-    if not directory.endswith(/):
-        directory += /
+    if not directory.endswith('/'):
+        directory += '/'
     return directory
 
 def now_utc():
@@ -22,19 +21,19 @@ def now_utc():
     return f"[{hora_formatada}]"
 
 def find_lib(odc_json_file, target_libs):
-    with open(odc_json_file, r) as f:
+    with open(odc_json_file, 'r') as f:
         data = json.load(f)
 
-    print(f"{now_utc()} Identificando Libs do projeto: {data.get(projectInfo, {}).get(name, Unknown)} ({data.get(projectInfo, {}).get(reportDate, Unknown)})")
+    print(f"{now_utc()} Identificando Libs do projeto: {data.get('projectInfo', {}).get('name', 'Unknown')} ({data.get('projectInfo', {}).get('reportDate', 'Unknown')})")
 
-    dependencies = data.get(dependencies, [])
-    # obter apenas as dependências que tem a key packages e o primeiro item da lista não é vazio e tem um objeto com uma key id
-    #current_dependencies = [d[packages][0][id] for d in dependencies if d.get(packages, [{}])[0].get(id, )]
+    dependencies = data.get('dependencies', [])
+    # obter apenas as dependências que tem a key 'packages' e o primeiro item da lista não é vazio e tem um objeto com uma key 'id'
+    #current_dependencies = [d['packages'][0]['id'] for d in dependencies if d.get('packages', [{}])[0].get('id', '')]
     # pesquisa por uma dependência específica
     current_dependencies = [
-        {"pkg": d[packages][0][id], "path": d[filePath]}
+        {"pkg": d['packages'][0]['id'], "path": d['filePath']}
         for d in dependencies
-        if packages in d and d[packages] and id in d[packages][0] and any(d[packages][0][id].endswith(lib) for lib in target_libs)
+        if 'packages' in d and d['packages'] and 'id' in d['packages'][0] and any(d['packages'][0]['id'].endswith(lib) for lib in target_libs)
     ]
     return current_dependencies
 
@@ -51,7 +50,7 @@ if __name__ == "__main__":
     # Encontrar a dependência no arquivo JSON
     search_result = find_lib(odc_json_file, target_libs)
     # Cria o arquivo de relatório
-    with open(libscan_report, w) as f:
+    with open(libscan_report, 'w') as f:
         f.write(f"---\n\n")
         f.write(f"# LibScan Report\n\n")
         f.write(f"### Bad Libraries quantity: {len(search_result)}\n\n")
@@ -62,8 +61,9 @@ if __name__ == "__main__":
 
             for pkg in search_result:
                 # Gera o conteúdo do relatório em formato de tabela
-                f.write(f"| {pkg[pkg]} | {pkg[path]} |\n")
+                f.write(f"| {pkg['pkg']} | {pkg['path']} |\n")
 
             f.write("\n")
         else:
             f.write(f"---\n")
+            
