@@ -41,6 +41,7 @@ runs:
       run: | 
 
             echo "sending slack message 📩"
+            WEBHOOK_URL='https://hooks.slack.com/services/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'
             DATE=$(TZ='America/Sao_Paulo' date +"%H:%M %Y-%m-%d")
             TOOL='LibScan'
             GITHUB_REPO=https://github.com/.../${{ github.event.repository.name }}
@@ -58,8 +59,6 @@ runs:
             TEMP_JSON=$(mktemp)
             echo "$JSON_PAYLOAD" > "$TEMP_JSON"
             curl -X POST -H 'Content-type: application/json' -d @"$TEMP_JSON" "$WEBHOOK_URL"
-      env:
-        WEBHOOK_URL: ${{ secrets.WEBHOOK_PROD }}
     
     - name: Upload Dependency Check Report
       uses: actions/upload-artifact@v4
