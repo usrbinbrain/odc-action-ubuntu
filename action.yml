@@ -11,10 +11,15 @@ runs:
   using: 'composite'
   steps:
 
+    - name: list env (ubuntu)
+      shell: bash
+      run: |
+           env
+
     - name: Run Dependency Check (ubuntu)
       shell: bash
       run: |
-           curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o suppression.xml -L 'https://api.github.com/repos/'$GITHUB_ACTION_REPOSITORY'/contents/suppression.xml?ref=feat-action'
+           curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o suppression.xml -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/suppression.xml?ref=feat-action'
            curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o libscan.py -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/libscan.py?ref=feat-action'
            curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o github_target_libs.json -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/github_target_libs.json?ref=feat-action'
            docker run --rm \
