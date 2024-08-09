@@ -41,7 +41,7 @@ runs:
       run: | 
 
             echo "sending slack message 📩"
-            WEBHOOK_URL='https://hooks.slack.com/services/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'
+            WEBHOOK_URL='https://hooks.slack.com/services/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'
             DATE=$(TZ='America/Sao_Paulo' date +"%H:%M %Y-%m-%d")
             TOOL='LibScan'
             GITHUB_REPO=https://github.com/.../${{ github.event.repository.name }}
