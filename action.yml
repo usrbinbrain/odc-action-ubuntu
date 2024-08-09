@@ -35,7 +35,32 @@ runs:
            cat odc-reports/dependency-check-report.md >> $GITHUB_STEP_SUMMARY
            echo "LibScan 🛡️" >> $GITHUB_STEP_SUMMARY
            cat odc-reports/libscan-report.md >> $GITHUB_STEP_SUMMARY
+    
+    - name: Send Slack message
+      shell: bash
+      run: | 
 
+            echo "sending slack message 📩"
+            DATE=$(TZ='America/Sao_Paulo' date +"%H:%M %Y-%m-%d")
+            TOOL='LibScan'
+            GITHUB_REPO=https://github.com/.../${{ github.event.repository.name }}
+            GITHUB_BRANCH=${{ github.head_ref || github.ref_name }}
+            FILE_CONTENT="odc-reports/libscan-report.md"
+            SUMMARY=https://github.com/.../${{ github.event.repository.name }}/actions/runs/${{ github.run_id }}#summary
+
+            JSON_PAYLOAD=$(cat <<EOF
+            {
+                "text": "Date: ${DATE#* }\nTime: ${DATE% *}\nTool: $TOOL\nRepository: $GITHUB_REPO\nBranch: $GITHUB_BRANCH\nSummary: $SUMMARY\nLibs found 🟣: $(grep "pkg" "$FILE_CONTENT"|wc -l)\n"
+            }
+            EOF
+            )
+
+            TEMP_JSON=$(mktemp)
+            echo "$JSON_PAYLOAD" > "$TEMP_JSON"
+            curl -X POST -H 'Content-type: application/json' -d @"$TEMP_JSON" "$WEBHOOK_URL"
+      env:
+        WEBHOOK_URL: ${{ secrets.WEBHOOK_PROD }}
+    
     - name: Upload Dependency Check Report
       uses: actions/upload-artifact@v4
       with:
