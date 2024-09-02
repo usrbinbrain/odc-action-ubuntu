@@ -1,0 +1,14 @@
+[
+    {
+        "repo_name": "e-card",
+        "suppression": ["CVE-2021-3003", "CVE-2021-2002", "CVE-2021-1001"]
+    },
+    {
+        "repo_name": "repo-A",
+        "suppression": ["CVE-2020-12346", "CVE-2020-23457", "CVE-2020-34568"]
+    },
+    {
+        "repo_name": "repo-B",
+        "suppression": ["CVE-2019-12347", "CVE-2019-23458", "CVE-2019-34569"]
+    }
+]
