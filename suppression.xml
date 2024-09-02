@@ -5,6 +5,7 @@
       Suppress all versions of file-type
       ]]></notes>
       <packageUrl regex="true">^pkg:npm/file\-type@.*$</packageUrl>
+      <package>async</package>
       <cve>CVE-2022-36313</cve>
    </suppress>
    <suppress>
