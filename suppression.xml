@@ -20,6 +20,6 @@
    </suppress>
    <suppress>
       <cve>CVE-2022-2020</cve>
-      <cve>CVE-2021-5050</cve>
+      <cve>cve-2021-5050</cve>
    </suppress>
 </suppressions>
