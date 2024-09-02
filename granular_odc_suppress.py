@@ -48,7 +48,9 @@ if __name__ == "__main__":
                 repo_suppress = repo_suppress[0]['suppression']
                 # coloca todos os itens da lista em uppercase
                 repo_suppress = [x.upper() for x in repo_suppress]
-                print(repo_suppress)
+
+                # informe que as cves foram adicionadas ao arquivo suppression.xml, informe o nome do repositório e as cves adicionadas
+                print(f"[+] Added granular suppressions for {repo_name} projetc: CVEs: {repo_suppress}")
                 add_cves_to_xml_as_string(repo_suppress, odc_suppress)
             else:
                 print(f"[!] Repo {repo_name} not found in {config_suppress}")
