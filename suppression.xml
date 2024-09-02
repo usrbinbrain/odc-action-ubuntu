@@ -7,4 +7,14 @@
       <packageUrl regex="true">^pkg:npm/file\-type@.*$</packageUrl>
       <cve>CVE-2022-36313</cve>
    </suppress>
+   <suppress>
+      <cve>CVE-2022-36313</cve>
+      <cve>CVE-2021-3749</cve>
+   </suppress>
+   <suppress>
+      <notes><![CDATA[
+      Suppress CVE-2022-31129
+      ]]></notes>
+      <cve>CVE-2022-31129</cve>
+   </suppress>
 </suppressions>
