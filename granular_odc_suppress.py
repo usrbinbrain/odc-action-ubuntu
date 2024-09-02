@@ -3,8 +3,8 @@ import sys
 import json
 import os
 
-config_suppress = 'granular_odc_suppress.json'
-odc_suppress = 'suppression.xml'
+config_suppress = '/src/granular_odc_suppress.json'
+odc_suppress = '/src/suppression.xml'
 
 def find_repo(repo_name, repo_list):
     return [item for item in repo_list if item['repo_name'] == repo_name] or []
@@ -50,4 +50,10 @@ if __name__ == "__main__":
                 repo_suppress = [x.upper() for x in repo_suppress]
                 print(repo_suppress)
                 add_cves_to_xml_as_string(repo_suppress, odc_suppress)
+            else:
+                print(f"[!] Repo {repo_name} not found in {config_suppress}")
+        else:
+            print("[!] Repo name is default")
+    else:
+        print("[!] granular_odc_suppress.json or suppression.xml not found")
 
