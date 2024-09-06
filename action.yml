@@ -24,6 +24,16 @@ runs:
            curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o github_target_libs.json -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/github_target_libs.json?ref=feat-action'
            curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o granular_odc_suppress.py -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/granular_odc_suppress.py?ref=feat-action'
            curl -H 'Authorization: token ${{ env.GITHUB_TOKEN }}' -H 'Accept: application/vnd.github.v3.raw' -o granular_odc_suppress.json -L 'https://api.github.com/repos/usrbinbrain/odc-action-ubuntu/contents/granular_odc_suppress.json?ref=feat-action'
+           
+           # Exibindo o valor de github.workflow
+           echo "Valor de github.workflow: ${{ github.workflow }}"
+           # Comparando o valor via if
+           if [ "${{ github.workflow }}" == "NomeDoWorkflow" ]; then
+             echo "Este é o workflow esperado!"
+           else
+             echo "Este NÃO é o workflow esperado!"
+           fi
+           
            docker run --rm \
            -v $(pwd):/src \
            -v $(pwd)/odc-reports:/report \
