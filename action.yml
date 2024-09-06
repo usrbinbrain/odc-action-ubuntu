@@ -29,17 +29,21 @@ runs:
            echo "Valor de github.workflow: ${{ github.workflow }}"
            echo "Nome do job (ID): ${{ github.job }}"
            # Comparando o valor via if
-           if [ "${{ github.workflow }}" == "NomeDoWorkflow" ]; then
-             echo "Este é o workflow esperado!"
+
+           
+           if [ "${{ github.job }}" == "dotnet" ]; then
+             echo "Workflow sem modulos experimentais!"
+             run_mode="--suppression /src/suppression.xml"
            else
-             echo "Este NÃO é o workflow esperado!"
+             echo "Workflow com modulos experimentais!"
+             run_mode="--enableExperimental --suppression /src/suppression.xml"
            fi
            
            docker run --rm \
            -v $(pwd):/src \
            -v $(pwd)/odc-reports:/report \
            gagama/owasp-dependency-check-ubuntu:latest \
-           sh -c "python3 /src/granular_odc_suppress.py "${{ inputs.project }}" ; /usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data --enableExperimental --suppression /src/suppression.xml --format JSON --out /report ; python3 /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json ; python3 /src/libscan.py /report/dependency-check-report.json /src/github_target_libs.json"
+           sh -c "python3 /src/granular_odc_suppress.py "${{ inputs.project }}" ; /usr/share/dependency-check/bin/dependency-check.sh --project "${{ inputs.project }}" --scan /src -n --data /dependency-check/data ${run_mode} --format JSON --out /report ; python3 /usr/local/bin/odc-json-report-to-markdown.py /report/dependency-check-report.json ; python3 /src/libscan.py /report/dependency-check-report.json /src/github_target_libs.json"
   
     - name: Get SCA and LibScan Report
       shell: bash
