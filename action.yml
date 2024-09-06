@@ -27,6 +27,7 @@ runs:
            
            # Exibindo o valor de github.workflow
            echo "Valor de github.workflow: ${{ github.workflow }}"
+           echo "Nome do job (ID): ${{ github.job }}"
            # Comparando o valor via if
            if [ "${{ github.workflow }}" == "NomeDoWorkflow" ]; then
              echo "Este é o workflow esperado!"
